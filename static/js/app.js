@@ -1,15 +1,43 @@
+// complete function that builds metadata panel
 function buildMetadata(sample) {
+  // use d3.json to fetch the metadata for a sample
   var MetaData = `/metadata/${sample}`;
+  //get the response, then do the function
   d3.json(MetaData).then(function(response) {
+    //use d3 to select the panel with id sample metadata
   var panelData = d3.select("#sample-metadata");
+  // use .html("") to clear any existing metadata
   panelData.html("");
+  // use object.entries to add each key and value pair to the panel
   var data = Object.entries(response);
   data.forEach(function(item) {
   panelData.append("div").text(item);
  });
  })}
+
 function buildCharts(sample) {
+  // use d3.json to fetch the sample data for the plots
   var sampleData = `/samples/${sample}`;
+  // build a bubble chart using the sample data
+  d3.json(sampleData).then(function(response){
+    var bubbleOtuIds = response.otu_ids;
+    var bubbleOuLabels = response.otu_labels;
+    var bubbleSampleValues = response.sample_values;
+    var bubbleTrace = {
+      mode: 'markers',
+      x: bubbleOtuIds,
+      y: bubbleSampleValues,
+      text: bubbleOuLabels,
+      marker: {color: bubbleOtuIds, colorscale: 'Earth', size: bubbleSampleValues}
+    };
+    var bubbleData = [bubbleTrace];
+    var layout = {
+      showlegend: false,
+      height: 600,
+      width: 1200
+      };
+    Plotly.newPlot('bubble', bubbleData, layout);
+// build pie - use slice to grab top ten sample values
   d3.json(sampleData).then(function(response){
     var topTenOtuIds = response.otu_ids.slice(0,10);
     var topOtuLabels = response.otu_labels.slice(0,10);
@@ -20,25 +48,7 @@ function buildCharts(sample) {
       "hovertext": topOtuLabels,
       "type": "pie"
     }];
-  Plotly.newPlot('pie', data);
-  d3.json(sampleData).then(function(response){
-    var bubbleOtuIds = response.otu_ids;
-    var bubbleOuLabels = response.otu_labels;
-    var bubbleSampleValues = response.sample_values;
-    var bubbleTrace = {
-      mode: 'markers',
-      x: bubbleOtuIds,
-      y: bubbleSampleValues,
-      text: bubbleOuLabels,
-      marker: {color: bubbleOtuIds, colorscale: 'Rainbow', size: bubbleSampleValues}
-    };
-    var bubbleData = [bubbleTrace];
-    var layout = {
-      showlegend: false,
-      height: 600,
-      width: 1200
-      };
-    Plotly.newPlot('bubble', bubbleData, layout); 
+  Plotly.newPlot('pie', data); 
   })
 })
 }
