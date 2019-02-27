@@ -1,9 +1,9 @@
 // complete function that builds metadata panel
 function buildMetadata(sample) {
   // use d3.json to fetch the metadata for a sample
-  var MetaData = `/metadata/${sample}`;
+  var metaData = `/metadata/${sample}`;
   //get the response, then do the function
-  d3.json(MetaData).then(function(response) {
+  d3.json(metaData).then(function(response) {
     //use d3 to select the panel with id sample metadata
   var panelData = d3.select("#sample-metadata");
   // use .html("") to clear any existing metadata
@@ -20,31 +20,31 @@ function buildCharts(sample) {
   var sampleData = `/samples/${sample}`;
   // build a bubble chart using the sample data
   d3.json(sampleData).then(function(response){
-    var bubbleOtuIds = response.otu_ids;
-    var bubbleOuLabels = response.otu_labels;
+    var bubbleOtuId = response.otu_ids;
+    var bubbleOtuLabels = response.otu_labels;
     var bubbleSampleValues = response.sample_values;
     var bubbleTrace = {
       mode: 'markers',
-      x: bubbleOtuIds,
+      x: bubbleOtuId,
       y: bubbleSampleValues,
-      text: bubbleOuLabels,
+      text: bubbleOtuLabels,
       marker: {color: bubbleOtuIds, colorscale: 'Earth', size: bubbleSampleValues}
     };
     var bubbleData = [bubbleTrace];
     var layout = {
       showlegend: false,
       height: 600,
-      width: 1200
+      width: 1500
       };
     Plotly.newPlot('bubble', bubbleData, layout);
 // build pie - use slice to grab top ten sample values
   d3.json(sampleData).then(function(response){
-    var topTenOtuIds = response.otu_ids.slice(0,10);
+    var topOtuIds = response.otu_ids.slice(0,10);
     var topOtuLabels = response.otu_labels.slice(0,10);
-    var topTenSampleValues = response.sample_values.slice(0,10);
+    var topSampleValues = response.sample_values.slice(0,10);
     var data = [{
-      "labels": topTenOtuIds,
-      "values": topTenSampleValues,
+      "labels": topOtuIds,
+      "values": topSampleValues,
       "hovertext": topOtuLabels,
       "type": "pie"
     }];
